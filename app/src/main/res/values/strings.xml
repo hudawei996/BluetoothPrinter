@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">蓝牙打印功能演示</string>
+    <string name="connect_printer">连接蓝牙打印机</string>
+    <string name="print_text">打印文本</string>
+    <string name="print_image">选择图片打印</string>
+    <string name="print_bill">打印账单</string>
+    <string name="print_order">打印快递单</string>
+    <string name="disconnect">打印机未连接</string>
+    <string name="disconnect_btn">断开连接</string>
+    <string name="feed">出纸</string>
+    <string name="unbind_devices">已找到的打印机：</string>
+    <string name="bonded_devices">已配对的打印机：</string>
+    <string name="print_code128">打印条形码</string>
+    <string name="print_qrcode">打印二维码</string>
+</resources>
