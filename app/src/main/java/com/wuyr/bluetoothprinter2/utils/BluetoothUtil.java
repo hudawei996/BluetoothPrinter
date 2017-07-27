@@ -213,6 +213,25 @@ public class BluetoothUtil {
         void failure(Exception e);
     }
 
+    public void printFullLine(String content, boolean isWidth2x) {
+        int count = isWidth2x ? 24 : 48;
+        char[] items = content.toCharArray();
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            for (char tmp : items) {
+                if (result.length() == count) break;
+                result.append(tmp);
+            }
+            if (result.length() == count) break;
+        }
+        result.append("\n");
+        try {
+            addArrayToData(result.toString().getBytes("GBK"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void printFormatText(String content, PrintParams printParams) {
         try {
             setPrintParams(printParams);

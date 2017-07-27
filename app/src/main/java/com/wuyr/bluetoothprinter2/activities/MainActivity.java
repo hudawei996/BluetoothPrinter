@@ -194,34 +194,54 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     public void printBill(View view) {
         if (checkIsConnected()) {
             BluetoothUtil.PrintParams printParams = new BluetoothUtil.PrintParams();
 
+            printParams.setWidth2x(1);
             printParams.setHeight2x(1);
-            printParams.setWidth2x(0);
-            mBluetoothUtil.printFormatText("数量      单价      菜名", printParams);
+            mBluetoothUtil.printFormatText(formatCenter("★★XX美食店★★", isWidth2x(printParams)), printParams);
+            mBluetoothUtil.feed();
+            mBluetoothUtil.printFormatText(formatCenter("★在线支付订单★", isWidth2x(printParams)), printParams);
             mBluetoothUtil.feed();
             mBluetoothUtil.feed();
-            mBluetoothUtil.writeData(mSocket);
-
             printParams.setHeight2x(0);
+            printParams.setWidth2x(0);
+            mBluetoothUtil.printFormatText("X X美食店 XXX分店）\n" +
+                    "XX市XX区XXXXXXXXXXXXXXXX\n" +
+                    "电话：12345678901\n" +
+                    "官网：www.xxx.com", printParams);
+            mBluetoothUtil.feed();
+
+            mBluetoothUtil.printFullLine("-", isWidth2x(printParams));
+            mBluetoothUtil.printFormatText("下单时间：2017-07-28 23:18:22\n\n", printParams);
+            mBluetoothUtil.printFullLine("-", isWidth2x(printParams));
+            mBluetoothUtil.feed();
+
+            mBluetoothUtil.printFormatText(handleString("美食篮子/%/数量/%/单价/%/金额\n", isWidth2x(printParams)), printParams);
+            mBluetoothUtil.printFullLine("-", isWidth2x(printParams));
+            mBluetoothUtil.printFormatText(handleString("麻婆豆腐/%/1/%/10/%/10\n", isWidth2x(printParams)), printParams);
+            mBluetoothUtil.printFormatText(handleString("土豆炒肉/%/1/%/12/%/12\n", isWidth2x(printParams)), printParams);
+            mBluetoothUtil.printFormatText(handleString("黄焖鸡米/%/1/%/15/%/15\n", isWidth2x(printParams)), printParams);
+            mBluetoothUtil.printFormatText(handleString("海参猪脚汤/%/1/%/9/%/9\n", isWidth2x(printParams)), printParams);
+            mBluetoothUtil.printFormatText(handleString("米饭/%/2/%/2/%/4\n", isWidth2x(printParams)), printParams);
+            mBluetoothUtil.printFullLine("-", isWidth2x(printParams));
+            mBluetoothUtil.printFormatText(handleString("小计/%/1/%/--/%/30\n", isWidth2x(printParams)), printParams);
+            mBluetoothUtil.printFormatText(handleString("优惠折扣/%/1/%/-20/%/-20\n", isWidth2x(printParams)), printParams);
+
+            mBluetoothUtil.printFullLine("-", isWidth2x(printParams));
+            printParams.setHeight2x(1);
             printParams.setWidth2x(1);
-            mBluetoothUtil.printFormatText("数量      单价      菜名", printParams);
-            mBluetoothUtil.feed();
-            mBluetoothUtil.feed();
-            mBluetoothUtil.writeData(mSocket);
+            mBluetoothUtil.printFormatText(handleString("合计：30（已付款）\n", isWidth2x(printParams)), printParams);
+            printParams.setHeight2x(0);
+            printParams.setWidth2x(0);
+            mBluetoothUtil.printFormatText("", printParams);
+            mBluetoothUtil.printFullLine("-", isWidth2x(printParams));
 
             printParams.setHeight2x(1);
             printParams.setWidth2x(1);
-            mBluetoothUtil.printFormatText("数量      单价      菜名", printParams);
-            mBluetoothUtil.feed();
-            mBluetoothUtil.feed();
-            mBluetoothUtil.writeData(mSocket);
-
-            printParams.setFont(1);
-            printParams.setEmphasized(1);
-            mBluetoothUtil.printFormatText("数量       单价     菜名", printParams);
+            mBluetoothUtil.printFormatText("备注：不加辣", printParams);
             mBluetoothUtil.feed();
             mBluetoothUtil.feed();
             mBluetoothUtil.feed();
@@ -229,25 +249,77 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public byte[] getData() {
+    private boolean isWidth2x(BluetoothUtil.PrintParams printParams) {
+        return printParams.getWidth2x() == 1;
+    }
+
+    public int getKeyCount(String str, String key) {
+        if (str == null || key == null || "".equals(str.trim()) || "".equals(key.trim())) {
+            return 0;
+        }
+        int count = 0;
+        int index = 0;
+        while ((index = str.indexOf(key, index)) != -1) {
+            index += key.length();
+            count++;
+        }
+        return count;
+    }
+
+    private String handleString(String src, boolean isWidth2x) {
+        String[] items = src.split("/%/");
+        int totalLength = isWidth2x ? 24 : 48;
+        int stringLength = 0;
+        int stringCount = 0;
+        for (String tmp : items) {
+            if (!tmp.isEmpty()) {
+                stringLength += getStringRealLength(tmp)/2;
+                stringCount++;
+            }
+        }
+
+        if (stringCount - 1 < 1)
+            return src;
+        int spaceLength = (totalLength - stringLength) / (stringCount - 1);
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < stringCount; i++) {
+            result.append(items[i]);
+            if (i == stringCount - 1) break;
+            int spaceCount = Math.abs(spaceLength - getStringRealLength(items[i]));
+            for (int i2 = 0; i2 < spaceCount; i2++)
+                result.append(" ");
+        }
+        return result.toString();
+    }
+
+    private int getStringRealLength(String src) {
+        char[] items = src.toCharArray();
+        int chineseCharCount = 0;
         try {
-            /*return ("商品\t\t数量\t\t价格" + " \n\n" +
-                    "牛肉\t\t4\t\t355" + " \n" +
-                    "猪耳朵\t\t4\t\t87" + " \n" +
-                    "鸭肉\t\t1\t\t14" + " \n" +
-                    "鸡腿\t\t8\t\t56" + " \n" +
-                    "青菜\t\t3\t\t44" + " \n" +
-                    "大白菜\t\t12\t\t35" + " \n" +
-                    "米饭\t\t1\t\t2" + " \n" +
-                    "白粥\t\t4\t\t4" + " \n" +
-                    "\t\t\t\t小计" + "\n" +
-                    "\t\t\t\t452" + "\n\n\n").getBytes("GBK");*/
-            String content = "1234567890";
-            return content.getBytes("GBK");
+            for (char c : items) {
+                if (new String(new char[]{c}).getBytes("GBK").length == 2)
+                    chineseCharCount++;
+            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return new byte[0];
+        int result = src.length();
+        result -= chineseCharCount;
+        result = result + (chineseCharCount * 2);
+        return result;
+    }
+
+
+    private String formatCenter(String src, boolean isWidth2x) {
+        int totalLength = isWidth2x ? 24 : 48;
+        int stringLength = src.length();
+        // TODO: 17-7-28 chinese use 2 byte
+        int spaceCount = (totalLength / (isWidth2x ? 4 : 2)) - (stringLength / (isWidth2x ? 4 : 2));
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < spaceCount; i++)
+            result.append(" ");
+        result.append(src);
+        return result.toString();
     }
 
     private Bitmap getBitmapFromAssets(String fileName) {
