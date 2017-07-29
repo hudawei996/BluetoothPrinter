@@ -20,9 +20,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputFilter;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.wuyr.bluetoothprinter2.R;
@@ -30,6 +35,15 @@ import com.wuyr.bluetoothprinter2.customize.MySnackBar;
 import com.wuyr.bluetoothprinter2.utils.BluetoothUtil;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import static android.os.Build.VERSION_CODES.M;
+import static com.wuyr.bluetoothprinter2.R.array.count;
 
 /**
  * Created by wuyr on 17-7-15 下午5:31.
@@ -168,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void printImage(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        if (Build.VERSION.SDK_INT >= M)
             verifyStoragePermissions(this);
         if (checkIsConnected()) {
             try {
@@ -198,7 +212,6 @@ public class MainActivity extends AppCompatActivity {
     public void printBill(View view) {
         if (checkIsConnected()) {
             BluetoothUtil.PrintParams printParams = new BluetoothUtil.PrintParams();
-
             printParams.setWidth2x(1);
             printParams.setHeight2x(1);
             mBluetoothUtil.printFormatText(formatCenter("★★XX美食店★★", isWidth2x(printParams)), printParams);
@@ -215,38 +228,157 @@ public class MainActivity extends AppCompatActivity {
             mBluetoothUtil.feed();
 
             mBluetoothUtil.printFullLine("-", isWidth2x(printParams));
-            mBluetoothUtil.printFormatText("下单时间：2017-07-28 23:18:22\n\n", printParams);
+            mBluetoothUtil.printFormatText(new SimpleDateFormat("下单时间：yyyy-MM-dd HH:mm:ss\n",
+                    Locale.getDefault()).format(new Date()), printParams);
             mBluetoothUtil.printFullLine("-", isWidth2x(printParams));
-            mBluetoothUtil.feed();
+            View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_bill_view, null);
+            EditText remarks = dialogView.findViewById(R.id.remarks);
+            Spinner food1 = dialogView.findViewById(R.id.food1);
+            Spinner food2 = dialogView.findViewById(R.id.food2);
+            Spinner food3 = dialogView.findViewById(R.id.food3);
+            Spinner food4 = dialogView.findViewById(R.id.food4);
+            Spinner food5 = dialogView.findViewById(R.id.food5);
+            Spinner food6 = dialogView.findViewById(R.id.food6);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(count));
+            food1.setAdapter(adapter);
+            food2.setAdapter(adapter);
+            food3.setAdapter(adapter);
+            food4.setAdapter(adapter);
+            food5.setAdapter(adapter);
+            food6.setAdapter(adapter);
+            initData();
+            food1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    putData("小炒羊肉", Integer.parseInt(adapter.getItem(i)));
+                }
 
-            mBluetoothUtil.printFormatText(handleString("美食篮子/%/数量/%/单价/%/金额\n", isWidth2x(printParams)), printParams);
-            mBluetoothUtil.printFullLine("-", isWidth2x(printParams));
-            mBluetoothUtil.printFormatText(handleString("麻婆豆腐/%/1/%/10/%/10\n", isWidth2x(printParams)), printParams);
-            mBluetoothUtil.printFormatText(handleString("土豆炒肉/%/1/%/12/%/12\n", isWidth2x(printParams)), printParams);
-            mBluetoothUtil.printFormatText(handleString("黄焖鸡米/%/1/%/15/%/15\n", isWidth2x(printParams)), printParams);
-            mBluetoothUtil.printFormatText(handleString("海参猪脚汤/%/1/%/9/%/9\n", isWidth2x(printParams)), printParams);
-            mBluetoothUtil.printFormatText(handleString("米饭/%/2/%/2/%/4\n", isWidth2x(printParams)), printParams);
-            mBluetoothUtil.printFullLine("-", isWidth2x(printParams));
-            mBluetoothUtil.printFormatText(handleString("小计/%/1/%/--/%/30\n", isWidth2x(printParams)), printParams);
-            mBluetoothUtil.printFormatText(handleString("优惠折扣/%/1/%/-20/%/-20\n", isWidth2x(printParams)), printParams);
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
 
-            mBluetoothUtil.printFullLine("-", isWidth2x(printParams));
-            printParams.setHeight2x(1);
-            printParams.setWidth2x(1);
-            mBluetoothUtil.printFormatText(handleString("合计：30（已付款）\n", isWidth2x(printParams)), printParams);
-            printParams.setHeight2x(0);
-            printParams.setWidth2x(0);
-            mBluetoothUtil.printFormatText("", printParams);
-            mBluetoothUtil.printFullLine("-", isWidth2x(printParams));
+                }
+            });
+            food2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    putData("蚝油西兰花", Integer.parseInt(adapter.getItem(i)));
+                }
 
-            printParams.setHeight2x(1);
-            printParams.setWidth2x(1);
-            mBluetoothUtil.printFormatText("备注：不加辣", printParams);
-            mBluetoothUtil.feed();
-            mBluetoothUtil.feed();
-            mBluetoothUtil.feed();
-            mBluetoothUtil.writeData(mSocket);
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+            food3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    putData("胡萝卜炒虾仁", Integer.parseInt(adapter.getItem(i)));
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+            food4.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    putData("香醋角瓜", Integer.parseInt(adapter.getItem(i)));
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+            food5.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    putData("青椒肉丝炒年糕", Integer.parseInt(adapter.getItem(i)));
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+            food6.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    putData("清熘鸳鸯豆腐", Integer.parseInt(adapter.getItem(i)));
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+            EditText editText = dialogView.findViewById(R.id.discount);
+            new AlertDialog.Builder(this).setView(dialogView).setCancelable(false).setPositiveButton("确定", (dialogInterface, i) -> {
+                int discount = TextUtils.isEmpty(editText.getText().toString()) ? 0 : Integer.parseInt(editText.getText().toString());
+                Map<String, Integer> price = getFoodPrice();
+                Set<String> keys = price.keySet();
+                StringBuilder builder = new StringBuilder();
+                builder.append(handleString("美食篮子/&/数量/&/单价/&/金额\n", isWidth2x(printParams)));
+                builder.append(getFullLine("-", isWidth2x(printParams)));
+                int count = 0;
+                for (String k : keys) {
+                    if (mData.get(k) > 0) {
+                        count += mData.get(k) * price.get(k);
+                        builder.append(handleString(String.format(Locale.getDefault(),
+                                "%s/&/%d/&/%d/&/%d\n", k, mData.get(k), price.get(k),
+                                mData.get(k) * price.get(k)), isWidth2x(printParams)));
+                    }
+                }
+                builder.append(getFullLine("-", isWidth2x(printParams)));
+                builder.append(handleString(String.format(Locale.getDefault(), "小计/&/1/&/--/&/%d\n", count), isWidth2x(printParams)));
+                builder.append(handleString(String.format(Locale.getDefault(), "优惠折扣/&/1/&/-%d/&/-%d\n", discount, discount), isWidth2x(printParams)));
+                builder.append(getFullLine("-", isWidth2x(printParams)));
+                mBluetoothUtil.printFormatText(builder.toString(), printParams);
+                builder.append(getFullLine("-", isWidth2x(printParams)));
+                printParams.setHeight2x(1);
+                printParams.setWidth2x(1);
+                mBluetoothUtil.printFormatText(String.format(Locale.getDefault(), "合计：%s (已付款)\n", count - discount), printParams);
+                printParams.setHeight2x(0);
+                printParams.setWidth2x(0);
+                mBluetoothUtil.printFormatText("", printParams);
+                mBluetoothUtil.printFullLine("-", isWidth2x(printParams));
+                printParams.setHeight2x(1);
+                printParams.setWidth2x(1);
+                mBluetoothUtil.printFormatText(String.format(Locale.getDefault(), "备注：\n      %s\n", remarks.getText().toString()), printParams);
+                mBluetoothUtil.feed();
+                mBluetoothUtil.feed();
+                mBluetoothUtil.feed();
+                mBluetoothUtil.writeData(mSocket);
+            }).setNegativeButton("取消", null).show();
         }
+    }
+
+    private String getFullLine(String content, boolean isWidth2x) {
+        int count = isWidth2x ? 24 : 48;
+        char[] items = content.toCharArray();
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            for (char tmp : items) {
+                if (result.length() == count) break;
+                result.append(tmp);
+            }
+            if (result.length() == count) break;
+        }
+        result.append("\n");
+        return result.toString();
+    }
+
+    Map<String, Integer> mData = new HashMap<>();
+
+    private void initData() {
+        Set<String> keys = getFoodPrice().keySet();
+        for (String k : keys)
+            mData.put(k, 0);
+    }
+
+    private void putData(String k, int v) {
+        mData.put(k, v);
     }
 
     private boolean isWidth2x(BluetoothUtil.PrintParams printParams) {
@@ -267,29 +399,55 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String handleString(String src, boolean isWidth2x) {
-        String[] items = src.split("/%/");
+        String[] items = src.split("/&/");
         int totalLength = isWidth2x ? 24 : 48;
+        StringBuilder result = new StringBuilder();
         int stringLength = 0;
         int stringCount = 0;
         for (String tmp : items) {
             if (!tmp.isEmpty()) {
-                stringLength += getStringRealLength(tmp)/2;
+                stringLength += getStringRealLength(tmp);
                 stringCount++;
             }
         }
-
+        if (stringLength > totalLength) {
+            int moreLine = calculateLine(totalLength, stringLength);
+            totalLength += (moreLine * totalLength);
+        }
         if (stringCount - 1 < 1)
             return src;
-        int spaceLength = (totalLength - stringLength) / (stringCount - 1);
-        StringBuilder result = new StringBuilder();
+        int spaceLength = Math.abs((totalLength - stringLength) / (stringCount - 1));
         for (int i = 0; i < stringCount; i++) {
             result.append(items[i]);
             if (i == stringCount - 1) break;
-            int spaceCount = Math.abs(spaceLength - getStringRealLength(items[i]));
-            for (int i2 = 0; i2 < spaceCount; i2++)
+            for (int count = 0; count < spaceLength; count++) {
                 result.append(" ");
+            }
         }
         return result.toString();
+    }
+
+    private Map<String, Integer> getFoodPrice() {
+        Map<String, Integer> price = new HashMap<>();
+        price.put("小炒羊肉", 12);
+        price.put("蚝油西兰花", 13);
+        price.put("胡萝卜炒虾仁", 14);
+        price.put("青椒肉丝炒年糕", 15);
+        price.put("香醋角瓜", 16);
+        price.put("清熘鸳鸯豆腐", 17);
+        price.put("腐烧杏鲍菇", 18);
+        price.put("油面筋塞肉", 19);
+        price.put("腐乳烧土豆", 20);
+        price.put("娃娃菜炒粉丝", 22);
+        return price;
+    }
+
+    private int calculateLine(int total, int target) {
+        int line = 0;
+        do {
+            ++line;
+        } while ((target -= total) >= total);
+        return line;
     }
 
     private int getStringRealLength(String src) {
@@ -312,9 +470,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String formatCenter(String src, boolean isWidth2x) {
         int totalLength = isWidth2x ? 24 : 48;
-        int stringLength = src.length();
-        // TODO: 17-7-28 chinese use 2 byte
-        int spaceCount = (totalLength / (isWidth2x ? 4 : 2)) - (stringLength / (isWidth2x ? 4 : 2));
+        int stringLength = getStringRealLength(src);
+        int spaceCount = (totalLength / 2) - (stringLength / 2);
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < spaceCount; i++)
             result.append(" ");

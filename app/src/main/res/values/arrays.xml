@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="foods">
+        <item>小炒羊肉</item>
+        <item>蚝油西兰花 </item>
+        <item>胡萝卜炒虾仁</item>
+        <item>香醋角瓜</item>
+        <item>青椒肉丝炒年糕</item>
+        <item>清熘鸳鸯豆腐</item>
+        <item>油面筋塞肉</item>
+        <item>腐烧杏鲍菇</item>
+        <item>娃娃菜炒粉丝</item>
+        <item>腐乳烧土豆</item>
+    </string-array>
+    <string-array name="count">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+</resources>
