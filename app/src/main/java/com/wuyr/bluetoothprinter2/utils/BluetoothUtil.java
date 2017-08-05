@@ -234,9 +234,10 @@ public class BluetoothUtil {
 
     public void printFormatText(String content, PrintParams printParams) {
         try {
-            setPrintParams(printParams);
+            if (printParams != null)
+                setPrintParams(printParams);
             addArrayToData(content.getBytes("GBK"));
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -250,6 +251,7 @@ public class BluetoothUtil {
     }
 
     public void writeData(final BluetoothSocket socket) {
+        if (socket == null) return;
         mThreadPool.execute(() -> {
             try {
                 OutputStream os = socket.getOutputStream();
@@ -288,6 +290,7 @@ public class BluetoothUtil {
         }
 
         byte[] command = new byte[]{27, 33, temp};
+        addArrayToData(printParams.getAlign());
         addArrayToData(command);
     }
 
@@ -297,15 +300,15 @@ public class BluetoothUtil {
     }
 
     public void printCode(String content) {
-        setNumberPosition((byte) 3);
+        setNumberPosition((byte) 0);
         initCodeHeight((byte) 120);
-        initCodeWidth((byte) 2);
-        initCODE128(content);
+        initCodeWidth((byte) 4);
+        initUPCA(content);
     }
 
-    //above = 1; below = 2; above and below = 3;
+    //none = 0; above = 1; below = 2; above and below = 3;
     private void setNumberPosition(byte position) {
-        if (position < 1 || position > 3) return;
+        if (position < 0 || position > 3) return;
         addArrayToData(new byte[]{29, 72, position});
     }
 
@@ -325,10 +328,12 @@ public class BluetoothUtil {
         addArrayToData(new byte[]{29, 104, height});
     }
 
-    private void initCODE128(String content) {
-        byte[] command = new byte[]{29, 107, 73, (byte) content.length()};
-        addArrayToData(command);
-        addStrToData(content, command[3]);
+    private void initUPCA(String content) {
+        byte[] command = new byte[]{29, 107, 65, 11};
+        if (content.length() >= command[3]) {
+            addArrayToData(command);
+            addStrToData(content, 11);
+        }
     }
 
     private void addStrToData(String str, int length) {
@@ -472,7 +477,7 @@ public class BluetoothUtil {
         return bmpGrayScale;
     }
 
-    private static int[][] floyd16x16 = new int[][]{{
+    private int[][] floyd16x16 = new int[][]{{
             0, 128, 32, 160, 8, 136, 40, 168, 2, 130, 34, 162, 10, 138, 42, 170},
             {192, 64, 224, 96, 200, 72, 232, 104, 194, 66, 226, 98, 202, 74, 234, 106},
             {48, 176, 16, 144, 56, 184, 24, 152, 50, 178, 18, 146, 58, 186, 26, 154},
@@ -489,41 +494,40 @@ public class BluetoothUtil {
             {207, 79, 239, 111, 199, 71, 231, 103, 205, 77, 237, 109, 197, 69, 229, 101},
             {63, 191, 31, 159, 55, 183, 23, 151, 61, 189, 29, 157, 53, 181, 21, 149},
             {254, 127, 223, 95, 247, 119, 215, 87, 253, 125, 221, 93, 245, 117, 213, 85}};
-    private static int[] p0 = new int[]{0, 128};
-    private static int[] p1 = new int[]{0, 64};
-    private static int[] p2 = new int[]{0, 32};
-    private static int[] p3 = new int[]{0, 16};
-    private static int[] p4 = new int[]{0, 8};
-    private static int[] p5 = new int[]{0, 4};
-    private static int[] p6 = new int[]{0, 2};
+    private int[] p0 = new int[]{0, 128};
+    private int[] p1 = new int[]{0, 64};
+    private int[] p2 = new int[]{0, 32};
+    private int[] p3 = new int[]{0, 16};
+    private int[] p4 = new int[]{0, 8};
+    private int[] p5 = new int[]{0, 4};
+    private int[] p6 = new int[]{0, 2};
 
-    private byte[][] command = new byte[][]{
-            {0x1b, 0x61, 0x30},// 左对齐
-            {0x1b, 0x61, 0x31},// 居中对齐
-            {0x1b, 0x61, 0x32}// 右对齐
-    };
-
-    public void setAlign(int position) {
+    // left = 0; center = 1; right = 2;
+    public void setAlignNow(int position) {
         if (position < 0 || position > 2) return;
-        addArrayToData(command[position]);
+        addArrayToData(new byte[]{27, 97, (byte) position});
     }
 
     public static class PrintParams {
         private byte font, width2x, height2x, emphasized, underline;
+        // left = 0; center = 1; right = 2;
+        private byte[] align;
 
         public PrintParams() {
+            this.align = new byte[]{27, 97, 0};
+        }
+
+        public byte[] getAlign() {
+            return align;
+        }
+
+        public void setAlign(int position) {
+            if (position < 0 || position > 2) return;
+            align[2] = (byte) position;
         }
 
         public byte getFont() {
             return font;
-        }
-
-        public PrintParams(int font, int width2x, int height2x, int emphasized, int underline) {
-            this.font = (byte) font;
-            this.width2x = (byte) width2x;
-            this.height2x = (byte) height2x;
-            this.emphasized = (byte) emphasized;
-            this.underline = (byte) underline;
         }
 
         public void setFont(int font) {

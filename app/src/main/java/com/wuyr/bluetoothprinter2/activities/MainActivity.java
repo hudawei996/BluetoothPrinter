@@ -490,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void printOrder(View view) {
         if (checkIsConnected()) {
-            try {
+            /*try {
                 Bitmap bitmap = getBitmapFromAssets("p3.jpg");
                 if (bitmap != null)
                     mBluetoothUtil.printBitmap(bitmap);
@@ -499,7 +499,45 @@ public class MainActivity extends AppCompatActivity {
                 mBluetoothUtil.writeData(mSocket);
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*/
+            BluetoothUtil.PrintParams printParams = new BluetoothUtil.PrintParams();
+            printParams.setAlign(1);
+            printParams.setWidth2x(1);
+            printParams.setHeight2x(1);
+            mBluetoothUtil.printFormatText("XXX快递\n\n", printParams);
+
+            printParams.setAlign(0);
+            printParams.setWidth2x(0);
+            printParams.setHeight2x(0);
+            String content = "From: XXXXXXXXXXX站\n" +
+                    "To: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX站\n" +
+                    "收件地址: XX市XX区XXXXXXXXXXXXXXXX\n\n" +
+
+                    "托 运 人: 一二三四        件    数: 12345\n" +
+                    "货物名称: 一二三四        配送方式: 送货上门\n" +
+                    "收 件 人: 一二三四        联系电话: 0758-1234756\n\n" +
+
+                    "费用合计: 9999            实收费用: 8888\n" +
+                    "付款方式: 寄方/支付宝支付 代收货款: 9999\n\n" +
+
+                    "计划发车时间: 2017-08-05 15:00\n" +
+                    "          (以实际发车为准,短信通知)\n\n" +
+                    "目的站电话: 0057-4123456\n" +
+                    "始发站电话: 0758-7456456\n\n";
+            mBluetoothUtil.printFormatText(handleString(content, false), printParams);
+            mBluetoothUtil.setAlignNow(1);
+            mBluetoothUtil.printCode("387534535881");
+
+            printParams.setAlign(1);
+            printParams.setEmphasized(1);
+            printParams.setWidth2x(1);
+            printParams.setHeight2x(1);
+            mBluetoothUtil.printFormatText("45777376423", printParams);
+
+            mBluetoothUtil.feed();
+            mBluetoothUtil.feed();
+            mBluetoothUtil.feed();
+            mBluetoothUtil.writeData(mSocket);
         }
     }
 
