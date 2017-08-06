@@ -502,14 +502,29 @@ public class MainActivity extends AppCompatActivity {
             }*/
             BluetoothUtil.PrintParams printParams = new BluetoothUtil.PrintParams();
             printParams.setAlign(1);
+            printParams.setEmphasized(1);
             printParams.setWidth2x(1);
             printParams.setHeight2x(1);
-            mBluetoothUtil.printFormatText("XXX快递\n\n", printParams);
+            mBluetoothUtil.printFormatText("好客速运\n\n", printParams);
 
             printParams.setAlign(0);
+            printParams.setEmphasized(0);
             printParams.setWidth2x(0);
             printParams.setHeight2x(0);
-            String content = "From: XXXXXXXXXXX站\n" +
+
+            String content = "订单号: 123456789012\n" +
+                    "From: XXXXXXXXXXX站\n" +
+                    "To: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX站\n" +
+                    "收件地址: XX市XX区XXXXXXXXXXXXXXXX\n\n" +
+
+                    "托 运 人: 一二三四        联系方式: 0758-1234755\n" +
+                    "货物名称: 一二三四        件    数: 123  \n" +
+                    "配送方式: 系统范围价配送\n\n" +
+
+
+                    "收 件 人: 一二三四        联系方式: 0758-1234756\n" +
+                    "费用合计: 9999            付款方式: 寄方/支付宝\n\n";
+            /*String content = "From: XXXXXXXXXXX站\n" +
                     "To: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX站\n" +
                     "收件地址: XX市XX区XXXXXXXXXXXXXXXX\n\n" +
 
@@ -523,16 +538,27 @@ public class MainActivity extends AppCompatActivity {
                     "计划发车时间: 2017-08-05 15:00\n" +
                     "          (以实际发车为准,短信通知)\n\n" +
                     "目的站电话: 0057-4123456\n" +
-                    "始发站电话: 0758-7456456\n\n";
+                    "始发站电话: 0758-7456456\n\n";*/
             mBluetoothUtil.printFormatText(handleString(content, false), printParams);
+            String content2 = "备注:\n" +
+                    "┏━━━━━━━━━━┓\n" +
+                    "┃快递大哥请你轻拿轻放┃\n" +
+                    "┃快递大哥请你轻拿轻放┃\n" +
+                    "┃尽快送达谢谢        ┃\n" +
+                    "┗━━━━━━━━━━┛\n";
+            printParams.setEmphasized(1);
+            printParams.setWidth2x(1);
+            printParams.setHeight2x(1);
+            //mBluetoothUtil.printFormatText(content2, printParams);
+
             mBluetoothUtil.setAlignNow(1);
-            mBluetoothUtil.printCode("387534535881");
+            //mBluetoothUtil.printCode("387534535881");
 
             printParams.setAlign(1);
             printParams.setEmphasized(1);
             printParams.setWidth2x(1);
             printParams.setHeight2x(1);
-            mBluetoothUtil.printFormatText("45777376423", printParams);
+            //mBluetoothUtil.printFormatText("45777376423", printParams);
 
             mBluetoothUtil.feed();
             mBluetoothUtil.feed();
