@@ -1,4 +1,4 @@
-package com.wuyr.bluetoothprinter2.adapter;
+package com.wuyr.bluetoothprinter.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;
@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.wuyr.bluetoothprinter2.R;
+import com.wuyr.bluetoothprinter.R;
 
 import java.util.ArrayList;
 import java.util.List;

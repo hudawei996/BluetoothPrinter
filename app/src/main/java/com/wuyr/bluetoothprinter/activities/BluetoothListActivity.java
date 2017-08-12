@@ -1,4 +1,4 @@
-package com.wuyr.bluetoothprinter2.activities;
+package com.wuyr.bluetoothprinter.activities;
 
 import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
@@ -12,16 +12,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Toast;
 
-import com.wuyr.bluetoothprinter2.R;
-import com.wuyr.bluetoothprinter2.adapter.BluetoothListAdapter;
-import com.wuyr.bluetoothprinter2.customize.MySnackBar;
-import com.wuyr.bluetoothprinter2.utils.BluetoothUtil;
+import com.wuyr.bluetoothprinter.R;
+import com.wuyr.bluetoothprinter.adapter.BluetoothListAdapter;
+import com.wuyr.bluetoothprinter.customize.MySnackBar;
+import com.wuyr.bluetoothprinter.utils.BluetoothUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.wuyr.bluetoothprinter2.R.id.unbind_list;
+import static com.wuyr.bluetoothprinter.R.id.unbind_list;
 
 /**
  * Created by wuyr on 17-7-26 下午1:13.

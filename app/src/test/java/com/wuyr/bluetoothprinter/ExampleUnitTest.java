@@ -1,4 +1,4 @@
-package com.wuyr.bluetoothprinter2;
+package com.wuyr.bluetoothprinter;
 
 import org.junit.Test;
 

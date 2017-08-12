@@ -1,9 +1,9 @@
-package com.wuyr.bluetoothprinter2;
+package com.wuyr.bluetoothprinter;
 
 
 import android.content.Context;
 
-import com.wuyr.bluetoothprinter2.utils.LogUtil;
+import com.wuyr.bluetoothprinter.utils.LogUtil;
 
 /**
  * Created by wuyr on 17-7-15 下午12:12.

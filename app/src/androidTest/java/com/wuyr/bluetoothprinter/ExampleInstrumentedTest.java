@@ -1,4 +1,4 @@
-package com.wuyr.bluetoothprinter2;
+package com.wuyr.bluetoothprinter;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

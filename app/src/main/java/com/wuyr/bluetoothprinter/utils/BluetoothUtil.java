@@ -1,4 +1,4 @@
-package com.wuyr.bluetoothprinter2.utils;
+package com.wuyr.bluetoothprinter.utils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -17,7 +17,11 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Build;
 
-import com.wuyr.bluetoothprinter2.activities.MainActivity;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.wuyr.bluetoothprinter.activities.MainActivity;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -299,95 +303,51 @@ public class BluetoothUtil {
         addResizeBitmap(bitmap, 570, 0);
     }
 
-    public void printCode(String content) {
-        setNumberPosition((byte) 0);
-        initCodeHeight((byte) 120);
-        initCodeWidth((byte) 4);
-        initUPCA(content);
-    }
-
-    //none = 0; above = 1; below = 2; above and below = 3;
-    private void setNumberPosition(byte position) {
-        if (position < 0 || position > 3) return;
-        addArrayToData(new byte[]{29, 72, position});
-    }
-
-    private void initCodeWidth(byte width) {
-        byte[] command = new byte[]{29, 119, 0};
-        if (width > 6) {
-            width = 6;
-        }
-        if (width < 2) {
-            width = 1;
-        }
-        command[2] = width;
-        addArrayToData(command);
-    }
-
-    private void initCodeHeight(byte height) {
-        addArrayToData(new byte[]{29, 104, height});
-    }
-
-    private void initUPCA(String content) {
-        byte[] command = new byte[]{29, 107, 65, 11};
-        if (content.length() >= command[3]) {
-            addArrayToData(command);
-            addStrToData(content, 11);
-        }
-    }
-
-    private void addStrToData(String str, int length) {
-        byte[] bs = null;
-        if (!str.isEmpty()) {
-            try {
-                bs = str.getBytes("GB2312");
-            } catch (UnsupportedEncodingException var5) {
-                var5.printStackTrace();
-            }
-            if (bs != null && length > bs.length) {
-                length = bs.length;
-            }
-
-            for (int i = 0; i < length; ++i) {
-                if (bs != null) {
-                    mData.add(bs[i]);
+    public Bitmap getBarCodeBitmap(String content) {
+        try {
+            BitMatrix matrix = new MultiFormatWriter().encode(content,
+                    BarcodeFormat.EAN_13, 1000, 280);
+            int width = matrix.getWidth();
+            int height = matrix.getHeight();
+            int[] pixels = new int[width * height];
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    pixels[y * width + x] = matrix.get(x, y) ? 0xff000000 : 0xffffffff;
                 }
             }
+            Bitmap bitmap = Bitmap.createBitmap(width, height,
+                    Bitmap.Config.ARGB_8888);
+            bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+            return bitmap;
+        } catch (WriterException e) {
+            e.printStackTrace();
+            return null;
         }
+    }
 
+    public void printBarCode(String content) {
+       printBitmap(getBarCodeBitmap(content));
     }
 
     public void printQRCode(String content) {
-        initQRCodeSize((byte) 14);
-        initQRCodeData(content);
-    }
-
-    private void initQRCodeData(String content) {
-        byte[] command = new byte[]{29, 40, 107, (byte) ((content.getBytes().length + 3) % 256), (byte) ((content.getBytes().length + 3) / 256), 49, 80, 48};
-        addArrayToData(command);
-        byte[] bs = null;
-        if (!content.isEmpty()) {
-            try {
-                bs = content.getBytes("utf-8");
-            } catch (UnsupportedEncodingException var5) {
-                var5.printStackTrace();
-            }
-
-            if (bs != null) {
-                for (byte b : bs) {
-                    mData.add(b);
+        try {
+            BitMatrix matrix = new MultiFormatWriter().encode(content,
+                    BarcodeFormat.QR_CODE, 1000, 1000);
+            int width = matrix.getWidth();
+            int height = matrix.getHeight();
+            int[] pixels = new int[width * height];
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    pixels[y * width + x] = matrix.get(x, y) ? 0xff000000 : 0xffffffff;
                 }
             }
+            Bitmap bitmap = Bitmap.createBitmap(width, height,
+                    Bitmap.Config.ARGB_8888);
+            bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+            printBitmap(bitmap);
+        } catch (WriterException e) {
+            e.printStackTrace();
         }
-        byte[] tmp = new byte[]{29, 40, 107, 3, 0, 49, 81, 48};
-        for (byte b : tmp)
-            mData.add(b);
-    }
-
-    private void initQRCodeSize(byte n) {
-        byte[] command = new byte[]{29, 40, 107, 3, 0, 49, 67, 3};
-        command[7] = n;
-        addArrayToData(command);
     }
 
     private byte[] getBytes() {

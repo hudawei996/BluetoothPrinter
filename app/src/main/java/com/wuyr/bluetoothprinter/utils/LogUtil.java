@@ -1,4 +1,4 @@
-package com.wuyr.bluetoothprinter2.utils;
+package com.wuyr.bluetoothprinter.utils;
 
 import android.util.Log;
 
